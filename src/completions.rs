@@ -74,11 +74,17 @@ pub fn list_completions<'a>() -> Vec<Vec<&'a str>> {
 pub fn get_completions() -> Vec<CompletionItem> {
     list_completions()
         .iter()
-        .map(|item| CompletionItem {
-            label: item.get(0).unwrap().to_string(),
-            detail: Some(item.get(1).unwrap().to_string()),
-            kind: Some(CompletionItemKind::FIELD),
-            ..Default::default()
+        .map(|item| {
+            let completion_kind = match *item.get(2).unwrap() {
+                "field" => CompletionItemKind::FIELD,
+                _ => CompletionItemKind::TEXT,
+            };
+            CompletionItem {
+                label: item.get(0).unwrap().to_string(),
+                detail: Some(item.get(1).unwrap().to_string()),
+                kind: Some(completion_kind),
+                ..Default::default()
+            }
         })
         .collect()
 }
